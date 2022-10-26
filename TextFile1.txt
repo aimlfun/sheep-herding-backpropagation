@@ -1,0 +1,60 @@
+﻿The idea of "Sheep Herding" came to me sitting in bed one evening. Wondering what next, I remembered a game on the trs-80, where you 
+controlled the dog to herd the sheep (typed in from a magazine). It was a take it in turns with the limited 128x48 resolution. 
+
+I swiftly realised that to AI the sheep, I need "sheep". The concepts of movement were clear - in 2d, sheep cannot occupy the same space
+so think "collision avoidance". They tend to be in a flock not scattered completely around a field, at least during sheep dog trials.
+Lastly they need to avoid the dog, whilst at the same time show a tendency to re-group. I vaguely recollect a lot of animals use the
+selfish move to the center avoidance (you see it in fish). This constant jostling provides a more tricky target, and each sheep has done 
+what they can to avoid being eaten.
+
+Not wanting to spoil the fun, nor spend hours focusing on sheep modelling I was careful searching. The first useful one being Wikipedia.
+https://en.wikipedia.org/wiki/Flocking_(behavior)
+
+Well done Craig Reynolds, who laid the foundations.
+
+This got me to the following article https://vergenet.net/~conrad/boids/pseudocode.html which was enormously helpful to establish a basic 
+algorithm and become proficient at flocking.
+
+During additional searching I came across this paper about more realistic sheep simulation, with roots on Reynolds but improvements from birds to sheep.
+	http://www.diva-portal.org/smash/get/diva2:675990/FULLTEXT01.pdf
+
+I have followed both; basing it on the first articles interpretation of Reynolds, whilst incorporating escape and distance of predator in the calculation.
+The 2nd article was rich in explaining how their approach differed, but I am not sure I fully understood the maths (and they gave no code).
+
+I do not make claim the sheep part to be 100% perfect in behaviour. What I wanted was the basic concepts to challenge the AI.
+
+After building, I did a brief search to see what others have done. Take a look at this one; well explained. Kudo's to the young lad, and thank you for sharing. It's informative.
+
+https://www.youtube.com/watch?v=z1Ht6VJsKvw
+
+I would like to have see code commented, and formatted but not all of you probably see comments in the same way I do.
+
+Comparing approaches, he was feeding the coordinates of the sheep, which I don't like. I've used a sensor (dog has wall and sheep presence sensor). A dog would "see" 
+(hence vision like sensor). Internally the dog can map relative distances/direction to sheep, so it has "vague" coordinates. I just didn't like. It's a preference
+not a criticism.
+
+His gates are simple, whereas I've gone for something that I see as more challenging. That doesn't invalidate his. 
+
+He has scoring, but my approach is different, I am allowing the dog to know where we want the sheep to go (via way points). Rewarding based on it randomly getting 
+somewhere will work, but require a lot of evolutions before you pick something exhibiting the right behaviour. His tended to track along a wall until they hit a
+gap.
+
+He did a good job visualising graphically. But as folks who know me will attest to, I focus on aesthetics as much as the AI. I built the framework to support it.
+
+Mine absolutely can get the sheep to the end, but consistency (the sheep have minds of their own) is a little harder to crack.
+
+I may resort to my advanced genetic algorithm if cannot find a sweet spot with perceptrons.
+
+Challenges in the task:
+1) sheep modelling
+2) finding a way for the dog to know where the sheep must be pushed
+3) mutating the right dogs to weed out good from bad. It's pushed the sheep in <84 generations; quite impressive given the sheep behaviour.
+4) performance; when a dog decides to stand still, and so sheep go nowhere - required me to punish the dog for time-wasting.
+5) scoring in a meaningful way - a need to rank (and preserve based on past performance not just last performance) but also be careful after mutation the new
+   network isn't disadvantaged.
+
+Lesson(s) learnt:
+* Fail to test is rewarded with failure. 
+	-> I cannot underline enough the importance of knowing your inputs to the AI can be trusted. I had a number of bugs, one being the diagonal line detection.
+	-> Use tests to check. For example my "in triangle" logic appeared like I might be broken; so I plotted a rectangle around random triangles, and painted if#
+	   the point was in the triangle. It was working, but I can prove it visually.
